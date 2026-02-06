@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardGen Pro | Premium Gift Card Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #3a36e0;
+            --primary-dark: #2a27b3;
+            --secondary: #f8f9fa;
+            --dark: #121826;
+            --light: #ffffff;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.12);
+            --glass: rgba(255, 255, 255, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(90deg, var(--primary), #6a67f4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: var(--dark);
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 32px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--light);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(58, 54, 224, 0.05);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: var(--light);
+        }
+
+        .btn-success:hover {
+            background-color: #0da271;
+            transform: translateY(-3px);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: var(--light);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Header & Navigation */
+        header {
+            padding: 25px 0;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0 100px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(58, 54, 224, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(58, 54, 224, 0.1);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
+        }
+
+        /* Gift Card Selection */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            padding: 25px 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(58, 54, 224, 0.2);
+        }
+
+        .card.active {
+            border-color: var(--primary);
+            box-shadow: 0 15px 40px rgba(58, 54, 224, 0.15);
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 2rem;
+            color: var(--light);
+        }
+
+        .card-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        /* Card Colors */
+        .steam { background-color: #1b2838; }
+        .playstation { background-color: #003087; }
+        .xbox { background-color: #107c10; }
+        .paypal { background-color: #003087; }
+        .google-play { background-color: #0f9d58; }
+        .amazon { background-color: #ff9900; }
+        .aliexpress { background-color: #ff4747; }
+        .visa { background: linear-gradient(135deg, #1a1f71, #f7b600); }
+        .mastercard { background: linear-gradient(135deg, #eb001b, #f79e1b); }
+        .american-express { background: linear-gradient(135deg, #002663, #4d4d4d); }
+        .apple { background-color: #000000; }
+
+        /* Lab Panel */
+        .lab-panel {
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .panel-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--light);
+            margin-right: 20px;
+        }
+
+        .amount-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .amount-option {
+            background-color: var(--gray-light);
+            border-radius: var(--border-radius);
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .amount-option:hover {
+            background-color: rgba(58, 54, 224, 0.1);
+        }
+
+        .amount-option.selected {
+            background-color: rgba(58, 54, 224, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .expiry-notice {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .expiry-notice i {
+            color: var(--danger);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Generation Simulation */
+        .generation-panel {
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .progress-container {
+            background-color: var(--gray-light);
+            height: 12px;
+            border-radius: 6px;
+            margin: 40px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), #6a67f4);
+            border-radius: 6px;
+            transition: width 1s ease;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background-color: rgba(233, 236, 239, 0.5);
+            transition: var(--transition);
+        }
+
+        .step.active {
+            background-color: rgba(58, 54, 224, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        .step.completed {
+            background-color: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid var(--success);
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            background-color: var(--light);
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+
+        .step.active .step-icon {
+            background-color: var(--primary);
+            color: var(--light);
+        }
+
+        .step.completed .step-icon {
+            background-color: var(--success);
+            color: var(--light);
+        }
+
+        .step-content h4 {
+            margin-bottom: 5px;
+        }
+
+        .step-content p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(58, 54, 224, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Activation Gate */
+        .activation-panel {
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .task-container {
+            background-color: rgba(233, 236, 239, 0.5);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .task-status {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .task-status span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .task-loader {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+
+        .task-loader i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        /* Virtual Credit Card Styles */
+        .virtual-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .virtual-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(100px, -100px);
+        }
+
+        .virtual-card .card-type {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .virtual-card .card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            margin: 40px 0 30px;
+        }
+
+        .virtual-card .card-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+        }
+
+        .virtual-card .card-details div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .virtual-card .card-details span:first-child {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        /* AliExpress Coupon Style */
+        .coupon-code {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coupon-code::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.1) 10px,
+                rgba(255, 255, 255, 0.1) 20px
+            );
+            top: 0;
+            left: 0;
+        }
+
+        .coupon-code .code {
+            font-family: 'Courier New', monospace;
+            font-size: 2rem;
+            letter-spacing: 3px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .coupon-code .validity {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Code Reveal */
+        .code-reveal-panel {
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .code-container {
+            background-color: var(--dark);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .code-display {
+            font-family: 'Courier New', monospace;
+            font-size: 2.5rem;
+            letter-spacing: 5px;
+            color: var(--light);
+            margin: 30px 0;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
+            filter: blur(8px);
+            transition: filter 1s ease;
+        }
+
+        .code-display.revealed {
+            filter: blur(0);
+        }
+
+        .code-animation {
+            font-size: 1.2rem;
+            color: var(--warning);
+            margin-bottom: 20px;
+            min-height: 30px;
+        }
+
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .verification-badge i {
+            margin-right: 8px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: var(--light);
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            color: var(--light);
+            margin-bottom: 20px;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* Timer */
+        .timer {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .timer i {
+            margin-right: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            h1 { font-size: 2.8rem; }
+            h2 { font-size: 2.2rem; }
+            .cards-container { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.3rem; }
+            h2 { font-size: 1.9rem; }
+            .cards-container { grid-template-columns: repeat(2, 1fr); }
+            .lab-panel, .task-container, .code-container { padding: 25px; }
+            .amount-selector { grid-template-columns: repeat(2, 1fr); }
+            .virtual-card { padding: 20px; }
+            .virtual-card .card-number { font-size: 1.4rem; }
+        }
+
+        @media (max-width: 576px) {
+            h1 { font-size: 2rem; }
+            .cards-container { grid-template-columns: 1fr; }
+            .amount-selector { grid-template-columns: 1fr; }
+            .btn { padding: 14px 24px; width: 100%; }
+            .code-display { font-size: 1.8rem; letter-spacing: 3px; }
+            .virtual-card .card-number { font-size: 1.2rem; letter-spacing: 1px; }
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mb-1 { margin-bottom: 10px; }
+        .mb-2 { margin-bottom: 20px; }
+        .mb-3 { margin-bottom: 30px; }
+        .mb-4 { margin-bottom: 40px; }
+        .mt-1 { margin-top: 10px; }
+        .mt-2 { margin-top: 20px; }
+        .mt-3 { margin-top: 30px; }
+        .mt-4 { margin-top: 40px; }
+        .hidden { display: none !important; }
+        .visible { display: block !important; }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .scale-in {
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Security Badges */
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        .badge-item i {
+            color: var(--success);
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-gift"></i>
+                <span>CardGen Pro</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <div class="badge">Limited Time Offer • Secure & Verified</div>
+                <h1>Generate Free Gift Cards Instantly</h1>
+                <p>Select your favorite gift card, choose an amount, and unlock it by completing one simple task. No hidden fees, no credit card required.</p>
+                <div class="security-badges">
+                    <div class="badge-item"><i class="fas fa-shield-alt"></i> 100% Secure</div>
+                    <div class="badge-item"><i class="fas fa-bolt"></i> Instant Delivery</div>
+                    <div class="badge-item"><i class="fas fa-check-circle"></i> Verified Service</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gift Card Selection -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Select Your Gift Card</h2>
+                <p>Choose from our premium selection of gift cards. Click on a card to continue.</p>
+            </div>
+
+            <div class="cards-container">
+                <div class="card" data-card="steam">
+                    <div class="card-icon steam">
+                        <i class="fab fa-steam"></i>
+                    </div>
+                    <div class="card-name">Steam</div>
+                </div>
+                
+                <div class="card" data-card="playstation">
+                    <div class="card-icon playstation">
+                        <i class="fab fa-playstation"></i>
+                    </div>
+                    <div class="card-name">PlayStation</div>
+                </div>
+                
+                <div class="card" data-card="xbox">
+                    <div class="card-icon xbox">
+                        <i class="fab fa-xbox"></i>
+                    </div>
+                    <div class="card-name">Xbox</div>
+                </div>
+                
+                <div class="card" data-card="paypal">
+                    <div class="card-icon paypal">
+                        <i class="fab fa-paypal"></i>
+                    </div>
+                    <div class="card-name">PayPal</div>
+                </div>
+                
+                <div class="card" data-card="google-play">
+                    <div class="card-icon google-play">
+                        <i class="fab fa-google-play"></i>
+                    </div>
+                    <div class="card-name">Google Play</div>
+                </div>
+                
+                <div class="card" data-card="amazon">
+                    <div class="card-icon amazon">
+                        <i class="fab fa-amazon"></i>
+                    </div>
+                    <div class="card-name">Amazon</div>
+                </div>
+                
+                <div class="card" data-card="aliexpress">
+                    <div class="card-icon aliexpress">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="card-name">AliExpress</div>
+                </div>
+                
+                <div class="card" data-card="visa">
+                    <div class="card-icon visa">
+                        <i class="fab fa-cc-visa"></i>
+                    </div>
+                    <div class="card-name">Visa Card</div>
+                </div>
+                
+                <div class="card" data-card="mastercard">
+                    <div class="card-icon mastercard">
+                        <i class="fab fa-cc-mastercard"></i>
+                    </div>
+                    <div class="card-name">Mastercard</div>
+                </div>
+                
+                <div class="card" data-card="american-express">
+                    <div class="card-icon american-express">
+                        <i class="fab fa-cc-amex"></i>
+                    </div>
+                    <div class="card-name">American Express</div>
+                </div>
+                
+                <div class="card" data-card="apple">
+                    <div class="card-icon apple">
+                        <i class="fab fa-apple"></i>
+                    </div>
+                    <div class="card-name">Apple Gift</div>
+                </div>
+            </div>
+
+            <!-- Lab Panel (Value Selection) -->
+            <div id="labPanel" class="lab-panel">
+                <div class="panel-header">
+                    <div class="panel-icon" id="selectedCardIcon">
+                        <i class="fab fa-steam"></i>
+                    </div>
+                    <div>
+                        <h3 id="selectedCardName">Steam Gift Card</h3>
+                        <p>Select the amount you want to generate</p>
+                    </div>
+                </div>
+
+                <div class="expiry-notice">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Important:</strong> Your code will expire in <span id="expiryTimer">15:00</span> if the task is not completed. Complete the task quickly to secure your gift card.
+                    </div>
+                </div>
+
+                <div class="amount-selector">
+                    <div class="amount-option" data-amount="10">$10</div>
+                    <div class="amount-option" data-amount="25">$25</div>
+                    <div class="amount-option" data-amount="50">$50</div>
+                    <div class="amount-option" data-amount="100">$100</div>
+                </div>
+
+                <div class="text-center">
+                    <button id="getFreeBtn" class="btn btn-primary">
+                        <i class="fas fa-gift"></i> Get for Free
+                    </button>
+                </div>
+            </div>
+
+            <!-- Generation Simulation Panel -->
+            <div id="generationPanel" class="lab-panel generation-panel">
+                <div class="panel-header">
+                    <div class="panel-icon" id="generatingCardIcon">
+                        <i class="fab fa-steam"></i>
+                    </div>
+                    <div>
+                        <h3 id="generatingCardName">Steam Gift Card</h3>
+                        <p>Generating your $<span id="generatingAmount">10</span> gift card code</p>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <div class="steps-container">
+                    <div class="step active" id="step1">
+                        <div class="step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Analyzing request...</h4>
+                            <p>Verifying eligibility and available balance</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step2">
+                        <div class="step-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Generating code...</h4>
+                            <p>Creating unique gift card code</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step3">
+                        <div class="step-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Code generated — Not Activated</h4>
+                            <p>Your gift card code is ready but requires activation</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button id="activateBtn" class="btn btn-primary">
+                        <i class="fas fa-bolt"></i> Activate Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Activation Gate Panel -->
+            <div id="activationPanel" class="lab-panel activation-panel">
+                <div class="panel-header">
+                    <div class="panel-icon" id="activationCardIcon">
+                        <i class="fab fa-steam"></i>
+                    </div>
+                    <div>
+                        <h3 id="activationCardName">Steam Gift Card</h3>
+                        <p>Complete one task to activate your $<span id="activationAmount">10</span> gift card</p>
+                    </div>
+                </div>
+
+                <div class="task-container">
+                    <div class="task-status">Status: <span id="taskStatus">0 / 1 task completed</span></div>
+                    <p class="mb-3">Click the button below to complete the required task and unlock your gift card.</p>
+                    <a href="https://example-cpa-offer.com" target="_blank" id="completeTaskBtn" class="btn btn-success">
+                        <i class="fas fa-tasks"></i> Complete Task
+                    </a>
+                </div>
+
+                <div class="task-loader" id="taskLoader">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <h4>Verifying Task Completion</h4>
+                    <p>Please wait while we verify your task completion. This may take up to 2 minutes.</p>
+                    <p><strong>Note:</strong> The code will not unlock until the task is verified as completed.</p>
+                </div>
+
+                <div class="text-center">
+                    <button id="verifyTaskBtn" class="btn btn-primary">
+                        <i class="fas fa-check-circle"></i> I've Completed the Task
+                    </button>
+                </div>
+
+                <div class="timer" id="taskTimer">
+                    <i class="fas fa-clock"></i> Code expires in: <span id="activationTimer">15:00</span>
+                </div>
+            </div>
+
+            <!-- Code Reveal Panel -->
+            <div id="codeRevealPanel" class="lab-panel code-reveal-panel">
+                <div class="panel-header">
+                    <div class="panel-icon" id="revealCardIcon">
+                        <i class="fab fa-steam"></i>
+                    </div>
+                    <div>
+                        <h3 id="revealCardName">Steam Gift Card</h3>
+                        <p>Your $<span id="revealAmount">10</span> gift card is ready!</p>
+                    </div>
+                </div>
+
+                <div class="verification-badge">
+                    <i class="fas fa-check-circle"></i> Task Verified Successfully
+                </div>
+
+                <div id="codeDisplayContainer">
+                    <!-- This will be populated based on card type -->
+                </div>
+
+                <div class="text-center">
+                    <button id="revealCodeBtn" class="btn btn-success">
+                        <i class="fas fa-eye"></i> Reveal Code
+                    </button>
+                    <button id="copyCodeBtn" class="btn btn-secondary mt-2 hidden">
+                        <i class="fas fa-copy"></i> Copy Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>CardGen Pro</h4>
+                    <p>Our platform provides legitimate gift card generation through partner offers. We never ask for payment information.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>How It Works</h4>
+                    <p>1. Select your gift card<br>
+                    2. Choose an amount<br>
+                    3. Complete one simple task<br>
+                    4. Receive your code instantly</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Important Notice</h4>
+                    <p>Gift cards are provided by our advertising partners. Each user is limited to one gift card per 30 days. This is a promotional service.</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023-2026 CardGen Pro. All rights reserved. This service is not affiliated with any brands mentioned.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let selectedCard = null;
+        let selectedAmount = null;
+        let generatedCode = null;
+        let generatedCardDetails = null;
+        let expiryTimerInterval;
+        let activationTimerInterval;
+
+        // DOM Elements
+        const cards = document.querySelectorAll('.card');
+        const amountOptions = document.querySelectorAll('.amount-option');
+        const labPanel = document.getElementById('labPanel');
+        const generationPanel = document.getElementById('generationPanel');
+        const activationPanel = document.getElementById('activationPanel');
+        const codeRevealPanel = document.getElementById('codeRevealPanel');
+        const taskLoader = document.getElementById('taskLoader');
+        
+        // Card data mapping
+        const cardData = {
+            steam: { name: 'Steam', icon: 'fab fa-steam', color: '#1b2838', type: 'code' },
+            playstation: { name: 'PlayStation', icon: 'fab fa-playstation', color: '#003087', type: 'code' },
+            xbox: { name: 'Xbox', icon: 'fab fa-xbox', color: '#107c10', type: 'code' },
+            paypal: { name: 'PayPal', icon: 'fab fa-paypal', color: '#003087', type: 'code' },
+            'google-play': { name: 'Google Play', icon: 'fab fa-google-play', color: '#0f9d58', type: 'code' },
+            amazon: { name: 'Amazon', icon: 'fab fa-amazon', color: '#ff9900', type: 'code' },
+            aliexpress: { name: 'AliExpress', icon: 'fas fa-shopping-cart', color: '#ff4747', type: 'coupon' },
+            visa: { name: 'Visa', icon: 'fab fa-cc-visa', color: '#1a1f71', type: 'virtual-card' },
+            mastercard: { name: 'Mastercard', icon: 'fab fa-cc-mastercard', color: '#eb001b', type: 'virtual-card' },
+            'american-express': { name: 'American Express', icon: 'fab fa-cc-amex', color: '#002663', type: 'virtual-card' },
+            apple: { name: 'Apple', icon: 'fab fa-apple', color: '#000000', type: 'code' }
+        };
+
+        // Initialize page with animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate hero elements
+            const heroElements = document.querySelectorAll('.hero-content > *');
+            heroElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.2}s`;
+            });
+
+            // Add ripple effect to buttons
+            document.querySelectorAll('.btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const x = e.clientX - e.target.getBoundingClientRect().left;
+                    const y = e.clientY - e.target.getBoundingClientRect().top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('btn-ripple');
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Start expiry timer
+            startExpiryTimer(15 * 60, 'expiryTimer');
+        });
+
+        // Start expiry timer
+        function startExpiryTimer(duration, elementId) {
+            let timer = duration, minutes, seconds;
+            expiryTimerInterval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                document.getElementById(elementId).textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(expiryTimerInterval);
+                    document.getElementById(elementId).textContent = "EXPIRED";
+                    document.getElementById(elementId).style.color = "#ef4444";
+                }
+            }, 1000);
+        }
+
+        // Start activation timer
+        function startActivationTimer(duration, elementId) {
+            let timer = duration, minutes, seconds;
+            activationTimerInterval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                document.getElementById(elementId).textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(activationTimerInterval);
+                    document.getElementById(elementId).textContent = "EXPIRED";
+                    document.getElementById(elementId).style.color = "#ef4444";
+                    alert('Code has expired! Please start over.');
+                }
+            }, 1000);
+        }
+
+        // Card selection
+        cards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove active class from all cards
+                cards.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked card
+                this.classList.add('active');
+                
+                // Get selected card type
+                selectedCard = this.dataset.card;
+                
+                // Update lab panel with selected card info
+                const cardInfo = cardData[selectedCard];
+                document.getElementById('selectedCardIcon').innerHTML = `<i class="${cardInfo.icon}"></i>`;
+                document.getElementById('selectedCardIcon').style.backgroundColor = cardInfo.color;
+                document.getElementById('selectedCardName').textContent = `${cardInfo.name} Gift Card`;
+                
+                // Show lab panel with animation
+                labPanel.style.display = 'block';
+                setTimeout(() => {
+                    labPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+                
+                // Reset amount selection
+                amountOptions.forEach(option => option.classList.remove('selected'));
+                selectedAmount = null;
+                document.getElementById('getFreeBtn').disabled = true;
+            });
+        });
+
+        // Amount selection
+        amountOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                amountOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Get selected amount
+                selectedAmount = this.dataset.amount;
+                
+                // Enable the "Get for Free" button
+                document.getElementById('getFreeBtn').disabled = false;
+            });
+        });
+
+        // Get for Free button
+        document.getElementById('getFreeBtn').addEventListener('click', function() {
+            if (!selectedCard || !selectedAmount) {
+                alert('Please select both a gift card and an amount');
+                return;
+            }
+            
+            // Hide lab panel and show generation panel
+            labPanel.style.display = 'none';
+            
+            // Update generation panel with selected info
+            const cardInfo = cardData[selectedCard];
+            document.getElementById('generatingCardIcon').innerHTML = `<i class="${cardInfo.icon}"></i>`;
+            document.getElementById('generatingCardIcon').style.backgroundColor = cardInfo.color;
+            document.getElementById('generatingCardName').textContent = `${cardInfo.name} Gift Card`;
+            document.getElementById('generatingAmount').textContent = selectedAmount;
+            
+            // Show generation panel
+            generationPanel.style.display = 'block';
+            
+            // Start generation simulation
+            simulateGeneration();
+        });
+
+        // Simulate gift card generation
+        function simulateGeneration() {
+            const progressBar = document.getElementById('progressBar');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            
+            // Reset progress
+            progressBar.style.width = '0%';
+            step1.classList.remove('completed');
+            step2.classList.remove('completed', 'active');
+            step3.classList.remove('completed', 'active');
+            step1.classList.add('active');
+            
+            // Step 1: Analyzing request
+            setTimeout(() => {
+                progressBar.style.width = '33%';
+                step1.classList.remove('active');
+                step1.classList.add('completed');
+                step2.classList.add('active');
+                
+                // Step 2: Generating code
+                setTimeout(() => {
+                    progressBar.style.width = '66%';
+                    step2.classList.remove('active');
+                    step2.classList.add('completed');
+                    step3.classList.add('active');
+                    
+                    // Step 3: Code generated
+                    setTimeout(() => {
+                        progressBar.style.width = '100%';
+                        step3.classList.remove('active');
+                        step3.classList.add('completed');
+                        
+                        // Enable activate button
+                        document.getElementById('activateBtn').disabled = false;
+                    }, 1500);
+                }, 2000);
+            }, 1500);
+        }
+
+        // Activate Code button
+        document.getElementById('activateBtn').addEventListener('click', function() {
+            // Hide generation panel and show activation panel
+            generationPanel.style.display = 'none';
+            
+            // Update activation panel with selected info
+            const cardInfo = cardData[selectedCard];
+            document.getElementById('activationCardIcon').innerHTML = `<i class="${cardInfo.icon}"></i>`;
+            document.getElementById('activationCardIcon').style.backgroundColor = cardInfo.color;
+            document.getElementById('activationCardName').textContent = `${cardInfo.name} Gift Card`;
+            document.getElementById('activationAmount').textContent = selectedAmount;
+            
+            // Show activation panel
+            activationPanel.style.display = 'block';
+            
+            // Start activation timer
+            startActivationTimer(15 * 60, 'activationTimer');
+            
+            setTimeout(() => {
+                activationPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        });
+
+        // Verify Task button
+        document.getElementById('verifyTaskBtn').addEventListener('click', function() {
+            // Show loader for 2 minutes
+            document.querySelector('.task-container').style.display = 'none';
+            taskLoader.style.display = 'block';
+            
+            // Simulate 2 minute wait
+            setTimeout(() => {
+                // After 2 minutes, show verification complete
+                taskLoader.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <h4>Task Verified Successfully!</h4>
+                    <p>Your task has been verified. Your gift card is now being activated.</p>
+                `;
+                
+                // After verification, show code reveal panel
+                setTimeout(() => {
+                    activationPanel.style.display = 'none';
+                    showCodeRevealPanel();
+                }, 2000);
+            }, 120000); // 2 minutes = 120000 milliseconds
+        });
+
+        // Show code reveal panel
+        function showCodeRevealPanel() {
+            // Update reveal panel with selected info
+            const cardInfo = cardData[selectedCard];
+            document.getElementById('revealCardIcon').innerHTML = `<i class="${cardInfo.icon}"></i>`;
+            document.getElementById('revealCardIcon').style.backgroundColor = cardInfo.color;
+            document.getElementById('revealCardName').textContent = `${cardInfo.name} Gift Card`;
+            document.getElementById('revealAmount').textContent = selectedAmount;
+            
+            // Generate appropriate code/card based on type
+            const codeDisplayContainer = document.getElementById('codeDisplayContainer');
+            
+            if (cardInfo.type === 'virtual-card') {
+                // Generate virtual card
+                generatedCardDetails = generateVirtualCard(selectedCard);
+                codeDisplayContainer.innerHTML = `
+                    <div class="virtual-card">
+                        <div class="card-type">${selectedCard.toUpperCase()}</div>
+                        <div class="card-number">${generatedCardDetails.number}</div>
+                        <div class="card-details">
+                            <div>
+                                <span>CARDHOLDER</span>
+                                <span>${generatedCardDetails.holder}</span>
+                            </div>
+                            <div>
+                                <span>EXPIRES</span>
+                                <span>${generatedCardDetails.expiry}</span>
+                            </div>
+                            <div>
+                                <span>CVV</span>
+                                <span class="blur-code">${generatedCardDetails.cvv}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (cardInfo.type === 'coupon') {
+                // Generate coupon code
+                generatedCode = generateCouponCode();
+                codeDisplayContainer.innerHTML = `
+                    <div class="coupon-code">
+                        <h4>AliExpress Coupon Code</h4>
+                        <div class="code">${generatedCode}</div>
+                        <div class="validity">Valid until: Dec 31, 2026</div>
+                    </div>
+                `;
+            } else {
+                // Generate regular gift card code
+                generatedCode = generateGiftCardCode();
+                codeDisplayContainer.innerHTML = `
+                    <div class="code-container">
+                        <div class="code-animation" id="codeAnimation">Activating...</div>
+                        <div class="code-display blur-code" id="codeDisplay">${generatedCode}</div>
+                        <p>This code can be redeemed on the official platform. Copy it before closing this page.</p>
+                    </div>
+                `;
+            }
+            
+            // Show code reveal panel
+            codeRevealPanel.style.display = 'block';
+            setTimeout(() => {
+                codeRevealPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+            
+            // Start final activation simulation
+            simulateFinalActivation();
+        }
+
+        // Generate random gift card code
+        function generateGiftCardCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            
+            for (let i = 0; i < 15; i++) {
+                if (i > 0 && i % 5 === 0) code += '-';
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            return code;
+        }
+
+        // Generate coupon code
+        function generateCouponCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            
+            for (let i = 0; i < 10; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            return code;
+        }
+
+        // Generate virtual card details
+        function generateVirtualCard(cardType) {
+            let prefix = '';
+            let length = 16;
+            
+            switch(cardType) {
+                case 'visa':
+                    prefix = '4';
+                    break;
+                case 'mastercard':
+                    prefix = '5';
+                    break;
+                case 'american-express':
+                    prefix = '3';
+                    length = 15;
+                    break;
+            }
+            
+            // Generate card number with Luhn algorithm
+            let number = prefix;
+            for (let i = prefix.length; i < length - 1; i++) {
+                number += Math.floor(Math.random() * 10);
+            }
+            
+            // Add Luhn check digit
+            number += calculateLuhnCheckDigit(number);
+            
+            // Format number with spaces
+            let formattedNumber = '';
+            for (let i = 0; i < number.length; i++) {
+                if (i > 0 && i % 4 === 0) formattedNumber += ' ';
+                formattedNumber += number.charAt(i);
+            }
+            
+            // Generate expiry date (2026)
+            const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+            const year = '26';
+            
+            // Generate CVV
+            const cvv = String(Math.floor(Math.random() * 900) + 100);
+            
+            // Generate cardholder name
+            const firstNames = ['John', 'Jane', 'Robert', 'Emily', 'Michael', 'Sarah', 'David', 'Lisa'];
+            const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Garcia'];
+            const holder = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+            
+            return {
+                number: formattedNumber,
+                holder: holder.toUpperCase(),
+                expiry: `${month}/${year}`,
+                cvv: cvv
+            };
+        }
+
+        // Calculate Luhn check digit
+        function calculateLuhnCheckDigit(number) {
+            let sum = 0;
+            let alternate = false;
+            
+            for (let i = number.length - 1; i >= 0; i--) {
+                let n = parseInt(number.charAt(i), 10);
+                
+                if (alternate) {
+                    n *= 2;
+                    if (n > 9) {
+                        n = (n % 10) + 1;
+                    }
+                }
+                
+                sum += n;
+                alternate = !alternate;
+            }
+            
+            return ((sum * 9) % 10).toString();
+        }
+
+        // Simulate final activation
+        function simulateFinalActivation() {
+            const cardInfo = cardData[selectedCard];
+            
+            if (cardInfo.type === 'virtual-card' || cardInfo.type === 'coupon') {
+                // For virtual cards and coupons, show reveal button immediately
+                document.getElementById('revealCodeBtn').disabled = false;
+                return;
+            }
+            
+            const codeAnimation = document.getElementById('codeAnimation');
+            const animations = [
+                'Activating...',
+                'Contacting server...',
+                'Verifying response...',
+                'Finalizing code...',
+                'Code ready!'
+            ];
+            
+            let index = 0;
+            const animationInterval = setInterval(() => {
+                codeAnimation.textContent = animations[index];
+                index++;
+                
+                if (index >= animations.length) {
+                    clearInterval(animationInterval);
+                    
+                    // Enable reveal button
+                    document.getElementById('revealCodeBtn').disabled = false;
+                }
+            }, 800);
+        }
+
+        // Reveal Code button
+        document.getElementById('revealCodeBtn').addEventListener('click', function() {
+            const cardInfo = cardData[selectedCard];
+            
+            if (cardInfo.type === 'virtual-card') {
+                // Reveal CVV for virtual card
+                const cvvElement = document.querySelector('.virtual-card .blur-code');
+                if (cvvElement) {
+                    cvvElement.classList.remove('blur-code');
+                    cvvElement.style.filter = 'none';
+                }
+            } else if (cardInfo.type === 'coupon') {
+                // Coupon is already visible
+            } else {
+                // Reveal regular code
+                const codeDisplay = document.getElementById('codeDisplay');
+                if (codeDisplay) {
+                    codeDisplay.classList.remove('blur-code');
+                }
+            }
+            
+            // Hide reveal button and show copy button
+            this.classList.add('hidden');
+            document.getElementById('copyCodeBtn').classList.remove('hidden');
+            
+            // Show success message
+            if (cardInfo.type !== 'virtual-card' && cardInfo.type !== 'coupon') {
+                const codeAnimation = document.getElementById('codeAnimation');
+                if (codeAnimation) {
+                    codeAnimation.innerHTML = '<i class="fas fa-check-circle"></i> Code successfully revealed!';
+                    codeAnimation.style.color = '#10b981';
+                }
+            }
+        });
+
+        // Copy Code button
+        document.getElementById('copyCodeBtn').addEventListener('click', function() {
+            const cardInfo = cardData[selectedCard];
+            let textToCopy = '';
+            
+            if (cardInfo.type === 'virtual-card' && generatedCardDetails) {
+                textToCopy = `Card Number: ${generatedCardDetails.number}\nCardholder: ${generatedCardDetails.holder}\nExpiry: ${generatedCardDetails.expiry}\nCVV: ${generatedCardDetails.cvv}`;
+            } else if (generatedCode) {
+                textToCopy = generatedCode;
+            }
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Show copied message
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                this.style.backgroundColor = '#10b981';
+                this.style.color = 'white';
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.backgroundColor = '';
+                    this.style.color = '';
+                }, 2000);
+            });
+        });
+
+        // Complete Task button (CPA link)
+        document.getElementById('completeTaskBtn').addEventListener('click', function(e) {
+            // In a real implementation, this would open the CPA offer
+            // For simulation, we'll just show a message
+            e.preventDefault();
+            alert('In a real implementation, this would open the CPA offer. For this demo, please click "I\'ve Completed the Task" to continue.');
+        });
+    </script>
+</body>
+</html>

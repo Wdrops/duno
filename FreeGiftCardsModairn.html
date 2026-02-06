@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeVault - Premium Gift Card Generator</title>
+    
+    <!-- External Resources -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0a0a0a',
+                            light: '#ffffff',
+                            accent: '#3b82f6',
+                            success: '#10b981',
+                            glow: '#60a5fa'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.4)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Noise Texture Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-text-accent {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-dark {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Card Styles */
+        .gift-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gift-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .gift-card:hover::before {
+            left: 100%;
+        }
+
+        .gift-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.3);
+        }
+
+        .gift-card.active {
+            border-color: #3b82f6;
+            background: linear-gradient(145deg, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0.05) 100%);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .gift-card.active::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        /* Amount Buttons */
+        .amount-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .amount-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .amount-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .amount-btn.selected {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Generation Animation */
+        .progress-container {
+            position: relative;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4, #3b82f6);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .terminal-line {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.3s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Code Blur Effect */
+        .blur-code {
+            filter: blur(8px);
+            transition: filter 0.8s ease, opacity 0.8s ease;
+            user-select: none;
+        }
+
+        .blur-code.revealed {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        /* Slot Machine Effect */
+        .slot-machine {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            letter-spacing: 0.2em;
+        }
+
+        .slot-digit {
+            display: inline-block;
+            animation: slotSpin 0.1s linear infinite;
+        }
+
+        @keyframes slotSpin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100%); }
+        }
+
+        /* CTA Button */
+        .cta-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cta-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-primary:hover::before {
+            left: 100%;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.6);
+        }
+
+        .cta-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Secondary CTA */
+        .cta-secondary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cta-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.6);
+        }
+
+        /* Lab Panel Transition */
+        .lab-panel {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .lab-panel.open {
+            max-height: 600px;
+            opacity: 1;
+            margin-top: 2rem;
+        }
+
+        /* Particle Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            animation: float 10s infinite;
+        }
+
+        /* Credit Card Design */
+        .credit-card {
+            width: 100%;
+            max-width: 400px;
+            height: 250px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .credit-card.visa {
+            background: linear-gradient(135deg, #1a1f71 0%, #0d1250 100%);
+        }
+
+        .credit-card.mastercard {
+            background: linear-gradient(135deg, #eb001b 0%, #8c0011 100%);
+        }
+
+        .credit-card.amex {
+            background: linear-gradient(135deg, #108168 0%, #0a4d3e 100%);
+        }
+
+        .credit-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        .card-chip {
+            width: 50px;
+            height: 35px;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #d4af37 100%);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .card-chip::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0,0,0,0.3);
+            transform: translateY(-50%);
+        }
+
+        .card-chip::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: rgba(0,0,0,0.3);
+            transform: translateX(-50%);
+        }
+
+        .card-number {
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
+        }
+
+        .card-value {
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Coupon Style */
+        .coupon-card {
+            background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            border: 2px dashed rgba(255,255,255,0.3);
+        }
+
+        .coupon-card::before,
+        .coupon-card::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #0a0a0a;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .coupon-card::before {
+            left: -15px;
+        }
+
+        .coupon-card::after {
+            right: -15px;
+        }
+
+        .coupon-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            text-align: center;
+            background: rgba(255,255,255,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px dashed rgba(255,255,255,0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gift-card {
+                padding: 1.5rem;
+            }
+            .slot-machine {
+                font-size: 1rem;
+            }
+            .credit-card {
+                height: 200px;
+            }
+            .card-number {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Status Pulse */
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .status-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid #10b981;
+            animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="noise-overlay"></div>
+    
+    <!-- Particle Background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-white text-sm"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-tight">Code<span class="text-blue-500">Vault</span></span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center gap-2 text-xs text-gray-400">
+                        <div class="status-pulse"></div>
+                        <span>Server Online</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <i class="fa-solid fa-users"></i>
+                        <span id="online-users">1,247</span> Online
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative z-10 min-h-screen pt-24 pb-12 px-4 flex flex-col items-center justify-center">
+        
+        <!-- Hero Section -->
+        <div id="hero-section" class="w-full max-w-5xl mx-auto text-center mb-12 transition-all duration-700">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 text-xs font-medium text-blue-400 border border-blue-500/20">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Secure & Anonymous Generation</span>
+            </div>
+            
+            <h1 class="font-display font-bold text-5xl md:text-7xl mb-6 leading-tight">
+                Generate Free<br>
+                <span class="gradient-text-accent">Gift Cards</span> Instantly
+            </h1>
+            
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
+                Select your preferred platform and value. Our encrypted servers generate unique, unused codes ready for immediate activation.
+            </p>
+
+            <div class="flex items-center justify-center gap-6 text-sm text-gray-500">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-check-circle text-blue-500"></i>
+                    <span>No Registration</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-check-circle text-blue-500"></i>
+                    <span>Instant Delivery</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-check-circle text-blue-500"></i>
+                    <span>256-bit Encryption</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selection Grid -->
+        <div id="selection-container" class="w-full max-w-6xl mx-auto transition-all duration-500">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                <!-- Steam -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('steam', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-steam text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">Steam</h3>
+                        <p class="text-xs text-gray-500 mt-1">Global Codes</p>
+                    </div>
+                </div>
+
+                <!-- PlayStation -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('playstation', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-900 to-indigo-900 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-playstation text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">PSN</h3>
+                        <p class="text-xs text-gray-500 mt-1">Store Cards</p>
+                    </div>
+                </div>
+
+                <!-- Xbox -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('xbox', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-green-700 to-green-900 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-xbox text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">Xbox</h3>
+                        <p class="text-xs text-gray-500 mt-1">Game Pass</p>
+                    </div>
+                </div>
+
+                <!-- Apple -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('apple', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-apple text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">Apple</h3>
+                        <p class="text-xs text-gray-500 mt-1">Gift Card</p>
+                    </div>
+                </div>
+
+                <!-- PayPal -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('paypal', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-800 to-blue-950 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-paypal text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">PayPal</h3>
+                        <p class="text-xs text-gray-500 mt-1">Cash Codes</p>
+                    </div>
+                </div>
+
+                <!-- Google Play -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('google', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-green-600 to-teal-600 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-google-play text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">Google Play</h3>
+                        <p class="text-xs text-gray-500 mt-1">Store Credit</p>
+                    </div>
+                </div>
+
+                <!-- Amazon -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('amazon', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-orange-600 to-yellow-600 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-amazon text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">Amazon</h3>
+                        <p class="text-xs text-gray-500 mt-1">Gift Balance</p>
+                    </div>
+                </div>
+
+                <!-- AliExpress -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('aliexpress', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-shopping-bag text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">AliExpress</h3>
+                        <p class="text-xs text-gray-500 mt-1">Coupons</p>
+                    </div>
+                </div>
+
+                <!-- Visa -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('visa', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-cc-visa text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">Visa</h3>
+                        <p class="text-xs text-gray-500 mt-1">Prepaid</p>
+                    </div>
+                </div>
+
+                <!-- Mastercard -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('mastercard', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-cc-mastercard text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">Mastercard</h3>
+                        <p class="text-xs text-gray-500 mt-1">Prepaid</p>
+                    </div>
+                </div>
+
+                <!-- American Express -->
+                <div class="gift-card rounded-2xl p-6 flex flex-col items-center justify-center gap-4 group" onclick="selectCard('amex', this)">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-teal-600 to-cyan-700 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-cc-amex text-white"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="font-display font-semibold text-sm">Amex</h3>
+                        <p class="text-xs text-gray-500 mt-1">Prepaid</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lab Panel (Value Selection) -->
+            <div id="lab-panel" class="lab-panel glass rounded-3xl p-8 max-w-2xl mx-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display font-semibold text-lg">Configuration Lab</h3>
+                            <p class="text-xs text-gray-400">Customize your generation parameters</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span id="selected-platform" class="text-sm font-mono text-blue-400">Waiting...</span>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-3 uppercase tracking-wider">Select Amount (USD)</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button class="amount-btn py-4 rounded-xl font-display font-semibold text-lg" onclick="selectAmount(10, this)">$10</button>
+                            <button class="amount-btn py-4 rounded-xl font-display font-semibold text-lg" onclick="selectAmount(25, this)">$25</button>
+                            <button class="amount-btn py-4 rounded-xl font-display font-semibold text-lg" onclick="selectAmount(50, this)">$50</button>
+                            <button class="amount-btn py-4 rounded-xl font-display font-semibold text-lg" onclick="selectAmount(100, this)">$100</button>
+                        </div>
+                    </div>
+
+                    <button id="generate-btn" onclick="startGeneration()" class="w-full cta-primary py-4 rounded-xl font-display font-bold text-lg flex items-center justify-center gap-3 opacity-50 cursor-not-allowed" disabled>
+                        <span>Initialize Generation</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generation Simulation -->
+        <div id="generation-screen" class="hidden w-full max-w-2xl mx-auto">
+            <div class="glass rounded-3xl p-8 md:p-12">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center animate-pulse">
+                            <i class="fa-solid fa-gear fa-spin text-blue-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display font-semibold text-xl">Processing Request</h3>
+                            <p class="text-xs text-gray-400 font-mono">ID: <span id="request-id">----</span></p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span id="progress-text" class="font-mono text-2xl text-blue-400">0%</span>
+                    </div>
+                </div>
+
+                <div class="progress-container mb-8">
+                    <div id="main-progress" class="progress-bar"></div>
+                </div>
+
+                <div id="terminal-output" class="font-mono text-sm space-y-2 text-gray-400 mb-8 h-32 overflow-hidden">
+                    <!-- Terminal lines injected here -->
+                </div>
+
+                <div class="flex items-center justify-center gap-8 text-xs text-gray-500">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-server text-blue-500/50"></i>
+                        <span>Node US-East-1</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-lock text-green-500/50"></i>
+                        <span>TLS 1.3 Active</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-fingerprint text-purple-500/50"></i>
+                        <span>Verified</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Generated (Locked) -->
+        <div id="code-screen" class="hidden w-full max-w-2xl mx-auto">
+            <div class="glass rounded-3xl overflow-hidden">
+                <div class="bg-white/5 p-6 border-b border-white/10 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-key text-blue-400"></i>
+                        <span class="font-display font-semibold">Generated Asset</span>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs font-bold border border-yellow-500/20">PENDING</span>
+                </div>
+
+                <div class="p-8 md:p-12 text-center">
+                    <div id="code-display-container" class="inline-block mb-8 relative overflow-hidden">
+                        <!-- Content injected by JS based on card type -->
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="text-gray-400 mb-2">Status: <span class="text-yellow-400 font-semibold">Generated — Not Activated</span></p>
+                        <p class="text-xs text-gray-500">This code requires manual activation to prevent bot abuse.</p>
+                    </div>
+
+                    <button onclick="showLocker()" class="cta-secondary w-full py-4 rounded-xl font-display font-bold text-lg flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-unlock-keyhole"></i>
+                        <span>Activate Code</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CPA Locker -->
+        <div id="locker-screen" class="hidden w-full max-w-lg mx-auto">
+            <div class="glass rounded-3xl overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 p-8 text-center border-b border-white/10">
+                    <div class="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-4 border border-blue-500/30 shadow-lg shadow-blue-500/20">
+                        <i class="fa-solid fa-user-check text-3xl text-blue-400"></i>
+                    </div>
+                    <h2 class="font-display font-bold text-2xl mb-2">Human Verification</h2>
+                    <p class="text-gray-400 text-sm">Complete the verification step to decrypt your code</p>
+                </div>
+
+                <div class="p-8">
+                    <!-- Progress Indicator -->
+                    <div class="flex items-center justify-center gap-4 mb-8">
+                        <div class="flex flex-col items-center gap-2">
+                            <div id="step-1-indicator" class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/30">
+                                1
+                            </div>
+                            <span class="text-[10px] uppercase font-bold text-blue-400 tracking-wider">Task</span>
+                        </div>
+                        <div class="w-24 h-1 bg-gray-800 rounded-full overflow-hidden">
+                            <div id="connection-line" class="h-full w-0 bg-blue-500 transition-all duration-1000"></div>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                            <div id="step-2-indicator" class="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 text-gray-500 flex items-center justify-center font-bold text-sm transition-all duration-500">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="text-[10px] uppercase font-bold text-gray-600 tracking-wider">Unlock</span>
+                        </div>
+                    </div>
+
+                    <!-- Task Counter -->
+                    <div class="text-center mb-6">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-900 border border-gray-700">
+                            <span class="text-sm text-gray-400">Tasks Completed:</span>
+                            <span id="task-counter" class="font-mono font-bold text-xl text-white">0/1</span>
+                        </div>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <a href="https://www.google.com" target="_blank" onclick="completeTask()" id="cpa-button" class="block w-full group relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 p-[1px] mb-6">
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity blur"></div>
+                        <div class="relative bg-gray-900 group-hover:bg-transparent transition-colors rounded-xl p-4 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Verification Required</p>
+                                <p class="font-display font-bold text-white text-lg">Complete Task</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-external-link-alt text-white"></i>
+                            </div>
+                        </div>
+                        <!-- Progress bar inside button -->
+                        <div id="button-progress" class="absolute bottom-0 left-0 h-1 bg-cyan-400 w-0 transition-all duration-300"></div>
+                    </a>
+
+                    <p class="text-center text-xs text-gray-500 leading-relaxed">
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        Click the button above to verify your session. This helps us maintain service quality.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verification Loader (2 Minute Wait) -->
+        <div id="verification-loader" class="hidden w-full max-w-2xl mx-auto">
+            <div class="glass rounded-3xl p-8 md:p-12 text-center">
+                <div class="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-6 relative">
+                    <div class="absolute inset-0 rounded-full border-4 border-blue-500/30 animate-ping"></div>
+                    <i class="fa-solid fa-spinner fa-spin text-3xl text-blue-400"></i>
+                </div>
+
+                <h2 class="font-display font-bold text-2xl mb-4">Verifying Completion...</h2>
+                
+                <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-8">
+                    <p class="text-yellow-400 font-semibold text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        This will not unlock until you complete the task
+                    </p>
+                </div>
+
+                <div class="max-w-md mx-auto mb-6">
+                    <div class="flex justify-between text-sm text-gray-400 mb-2">
+                        <span class="text-red-400 font-semibold">Code expires in:</span>
+                        <span id="loader-timer" class="text-red-400 font-mono font-bold">02:00</span>
+                    </div>
+                    <div class="progress-container h-2 bg-gray-800 rounded-full overflow-hidden">
+                        <div id="verification-progress" class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 w-0 transition-all duration-1000"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-xs text-gray-500 font-mono" id="verification-log">
+                    <p>Initializing verification sequence...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Reveal -->
+        <div id="reveal-screen" class="hidden w-full max-w-2xl mx-auto">
+            <div class="glass rounded-3xl overflow-hidden text-center">
+                <div class="p-8 md:p-12">
+                    <div class="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6 animate-pulse">
+                        <i class="fa-solid fa-check text-2xl text-green-400"></i>
+                    </div>
+
+                    <h2 class="font-display font-bold text-3xl mb-2">Activation Complete</h2>
+                    <p class="text-gray-400 mb-8">Your code has been successfully decrypted and verified.</p>
+
+                    <div id="final-code-container" class="mb-8 relative overflow-hidden group cursor-pointer" onclick="copyCode()">
+                        <!-- Content injected by JS based on card type -->
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 text-xs text-gray-500 mb-8">
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+                            <i class="fa-solid fa-check text-green-500 mb-2 block"></i>
+                            <span>Verified</span>
+                        </div>
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+                            <i class="fa-solid fa-clock text-blue-500 mb-2 block"></i>
+                            <span>Active</span>
+                        </div>
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+                            <i class="fa-solid fa-globe text-purple-500 mb-2 block"></i>
+                            <span>Global</span>
+                        </div>
+                    </div>
+
+                    <button onclick="resetApp()" class="text-sm text-gray-500 hover:text-white transition-colors flex items-center gap-2 mx-auto">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Generate Another</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 w-full border-t border-white/10 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+                <div class="flex items-center gap-4">
+                    <span>© 2026 CodeVault</span>
+                    <span class="hidden md:inline">|</span>
+                    <span class="hidden md:inline">Not affiliated with displayed brands</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-lock text-green-500/50"></i>
+                        End-to-end encrypted
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Configuration ---
+        const CPA_LINK = "https://www.google.com"; // <-- REPLACE WITH YOUR CPA LINK
+        
+        // --- State Management ---
+        let state = {
+            selectedCard: null,
+            selectedAmount: null,
+            generatedCode: null,
+            generatedCardData: null,
+            taskCompleted: false
+        };
+
+        // --- Card Data Generators ---
+        const CardGenerators = {
+            visa: () => {
+                const prefixes = ['4'];
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let number = prefix;
+                for (let i = 0; i < 15; i++) number += Math.floor(Math.random() * 10);
+                const formatted = number.match(/.{1,4}/g).join(' ');
+                const cvv = Math.floor(100 + Math.random() * 900);
+                const month = String(Math.floor(1 + Math.random() * 12)).padStart(2, '0');
+                const year = String(Math.floor(26 + Math.random() * 5));
+                const name = generateRandomName();
+                return { number: formatted, cvv, expiry: `${month}/${year}`, name, type: 'visa' };
+            },
+            mastercard: () => {
+                const prefixes = ['51', '52', '53', '54', '55'];
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let number = prefix;
+                for (let i = 0; i < 14; i++) number += Math.floor(Math.random() * 10);
+                const formatted = number.match(/.{1,4}/g).join(' ');
+                const cvv = Math.floor(100 + Math.random() * 900);
+                const month = String(Math.floor(1 + Math.random() * 12)).padStart(2, '0');
+                const year = String(Math.floor(26 + Math.random() * 5));
+                const name = generateRandomName();
+                return { number: formatted, cvv, expiry: `${month}/${year}`, name, type: 'mastercard' };
+            },
+            amex: () => {
+                const prefixes = ['34', '37'];
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                let number = prefix;
+                for (let i = 0; i < 13; i++) number += Math.floor(Math.random() * 10);
+                const formatted = number.match(/.{1,4}/g).join(' ');
+                const cvv = Math.floor(1000 + Math.random() * 9000);
+                const month = String(Math.floor(1 + Math.random() * 12)).padStart(2, '0');
+                const year = String(Math.floor(26 + Math.random() * 5));
+                const name = generateRandomName();
+                return { number: formatted, cvv, expiry: `${month}/${year}`, name, type: 'amex' };
+            },
+            aliexpress: () => {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let code = '';
+                for (let i = 0; i < 12; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+                return { code: `AE-${code}`, type: 'coupon' };
+            },
+            standard: () => {
+                const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ23456789';
+                let code = '';
+                for (let i = 0; i < 16; i++) {
+                    if (i > 0 && i % 4 === 0) code += '-';
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return { code, type: 'standard' };
+            }
+        };
+
+        function generateRandomName() {
+            const firstNames = ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph', 'Thomas', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Paul', 'Andrew', 'Kenneth', 'Joshua'];
+            const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
+            return `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`.toUpperCase();
+        }
+
+        // --- Particle System ---
+        function initParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // --- Online Users Counter ---
+        function updateOnlineUsers() {
+            const base = 1200;
+            const variance = Math.floor(Math.random() * 100);
+            document.getElementById('online-users').textContent = (base + variance).toLocaleString();
+        }
+        setInterval(updateOnlineUsers, 5000);
+
+        // --- Card Selection ---
+        function selectCard(platform, element) {
+            document.querySelectorAll('.gift-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            element.classList.add('active');
+            state.selectedCard = platform;
+            
+            const platformNames = {
+                'steam': 'Steam Wallet',
+                'playstation': 'PlayStation Network',
+                'xbox': 'Xbox Game Pass',
+                'apple': 'Apple Gift Card',
+                'paypal': 'PayPal Cash',
+                'google': 'Google Play Credit',
+                'amazon': 'Amazon Gift Card',
+                'aliexpress': 'AliExpress Coupon',
+                'visa': 'Visa Prepaid',
+                'mastercard': 'Mastercard Prepaid',
+                'amex': 'American Express'
+            };
+            
+            document.getElementById('selected-platform').textContent = platformNames[platform];
+            
+            const panel = document.getElementById('lab-panel');
+            panel.classList.add('open');
+            
+            if (window.innerWidth < 768) {
+                setTimeout(() => {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 300);
+            }
+        }
+
+        // --- Amount Selection ---
+        function selectAmount(amount, element) {
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            state.selectedAmount = amount;
+            
+            const btn = document.getElementById('generate-btn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.innerHTML = `<span>Generate $${amount} Code</span><i class="fa-solid fa-wand-magic-sparkles"></i>`;
+        }
+
+        // --- Generation Simulation ---
+        function startGeneration() {
+            if (!state.selectedCard || !state.selectedAmount) return;
+            
+            document.getElementById('hero-section').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('hero-section').style.display = 'none';
+                document.getElementById('selection-container').style.display = 'none';
+                
+                const genScreen = document.getElementById('generation-screen');
+                genScreen.classList.remove('hidden');
+                genScreen.classList.add('animate-fade-in');
+                
+                runGenerationSequence();
+            }, 500);
+        }
+
+        function runGenerationSequence() {
+            const progressBar = document.getElementById('main-progress');
+            const progressText = document.getElementById('progress-text');
+            const terminal = document.getElementById('terminal-output');
+            const requestId = document.getElementById('request-id');
+            
+            requestId.textContent = 'REQ-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            const steps = [
+                { msg: 'Initializing secure connection...', progress: 10, delay: 800 },
+                { msg: 'Authenticating node...', progress: 25, delay: 1200 },
+                { msg: 'Allocating resources...', progress: 40, delay: 1000 },
+                { msg: 'Scanning database for unused codes...', progress: 60, delay: 1500 },
+                { msg: 'Generating unique encryption key...', progress: 75, delay: 1000 },
+                { msg: 'Packaging assets...', progress: 90, delay: 800 },
+                { msg: 'Finalizing generation...', progress: 100, delay: 1000 }
+            ];
+            
+            let currentStep = 0;
+            
+            function processStep() {
+                if (currentStep >= steps.length) {
+                    setTimeout(showCodeScreen, 500);
+                    return;
+                }
+                
+                const step = steps[currentStep];
+                
+                progressBar.style.width = step.progress + '%';
+                progressText.textContent = step.progress + '%';
+                
+                const line = document.createElement('div');
+                line.className = 'terminal-line flex items-center gap-2';
+                line.innerHTML = `<span class="text-green-500">[${new Date().toLocaleTimeString()}]</span><span>${step.msg}</span>`;
+                terminal.appendChild(line);
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                currentStep++;
+                setTimeout(processStep, step.delay);
+            }
+            
+            processStep();
+        }
+
+        // --- Show Code Screen ---
+        function showCodeScreen() {
+            const genScreen = document.getElementById('generation-screen');
+            genScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                genScreen.classList.add('hidden');
+                
+                const codeScreen = document.getElementById('code-screen');
+                codeScreen.classList.remove('hidden');
+                codeScreen.classList.add('animate-fade-in');
+                
+                generateCodeForPlatform();
+            }, 500);
+        }
+
+        function generateCodeForPlatform() {
+            const container = document.getElementById('code-display-container');
+            const platform = state.selectedCard;
+            
+            if (['visa', 'mastercard', 'amex'].includes(platform)) {
+                state.generatedCardData = CardGenerators[platform]();
+                container.innerHTML = renderCreditCardLocked(state.generatedCardData);
+            } else if (platform === 'aliexpress') {
+                state.generatedCode = CardGenerators.aliexpress().code;
+                container.innerHTML = renderCouponLocked(state.generatedCode);
+            } else {
+                state.generatedCode = CardGenerators.standard().code;
+                container.innerHTML = renderStandardLocked(state.generatedCode);
+            }
+        }
+
+        function renderCreditCardLocked(data) {
+            return `
+                <div class="credit-card ${data.type} blur-code p-6 flex flex-col justify-between mx-auto">
+                    <div class="flex justify-between items-start">
+                        <div class="card-chip"></div>
+                        <i class="fa-brands fa-cc-${data.type} text-4xl opacity-80"></i>
+                    </div>
+                    <div class="card-number text-white mt-4">**** **** **** ****</div>
+                    <div class="flex justify-between items-end mt-4">
+                        <div>
+                            <div class="card-label text-white/70 mb-1">Card Holder</div>
+                            <div class="card-value text-white">**** ******</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="card-label text-white/70 mb-1">Expires</div>
+                            <div class="card-value text-white">**/**</div>
+                            <div class="card-label text-white/70 mt-2 mb-1">CVV</div>
+                            <div class="card-value text-white">***</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCouponLocked(code) {
+            return `
+                <div class="coupon-card blur-code">
+                    <div class="text-white/80 text-sm mb-2">AliExpress Coupon</div>
+                    <div class="coupon-code text-white">${code.substring(0, 6)}****</div>
+                    <div class="text-white/60 text-xs mt-2">Valid for 30 days</div>
+                </div>
+            `;
+        }
+
+        function renderStandardLocked(code) {
+            return `
+                <div class="p-6 rounded-2xl bg-black/40 border border-white/10 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent animate-pulse"></div>
+                    <div class="slot-machine blur-code text-gray-500 relative z-10 text-2xl tracking-[0.2em]">
+                        XXXX-XXXX-XXXX-XXXX
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Locker Screen ---
+        function showLocker() {
+            const codeScreen = document.getElementById('code-screen');
+            codeScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                codeScreen.classList.add('hidden');
+                
+                const locker = document.getElementById('locker-screen');
+                locker.classList.remove('hidden');
+                locker.classList.add('animate-fade-in');
+            }, 500);
+        }
+
+        // --- Task Completion ---
+        function completeTask() {
+            if (state.taskCompleted) return;
+            
+            state.taskCompleted = true;
+            
+            document.getElementById('task-counter').textContent = '1/1';
+            document.getElementById('task-counter').classList.add('text-green-400');
+            
+            document.getElementById('connection-line').style.width = '100%';
+            
+            const step1 = document.getElementById('step-1-indicator');
+            step1.innerHTML = '<i class="fa-solid fa-check"></i>';
+            step1.classList.add('bg-green-500', 'border-green-500');
+            step1.classList.remove('bg-blue-500');
+            
+            const step2 = document.getElementById('step-2-indicator');
+            step2.classList.remove('bg-gray-800', 'border-gray-700', 'text-gray-500');
+            step2.classList.add('bg-blue-500', 'border-blue-500', 'text-white', 'animate-pulse');
+            
+            document.getElementById('button-progress').style.width = '100%';
+            
+            const btn = document.getElementById('cpa-button');
+            btn.querySelector('.font-bold').textContent = 'Complete Now';
+            
+            setTimeout(() => {
+                const locker = document.getElementById('locker-screen');
+                locker.style.opacity = '0';
+                
+                setTimeout(() => {
+                    locker.classList.add('hidden');
+                    
+                    const loader = document.getElementById('verification-loader');
+                    loader.classList.remove('hidden');
+                    loader.classList.add('animate-fade-in');
+                    
+                    startVerificationLoader();
+                }, 500);
+            }, 2000);
+        }
+
+        // --- Verification Loader (2 Minutes) ---
+        function startVerificationLoader() {
+            const totalTime = 120;
+            let timeLeft = totalTime;
+            const timerDisplay = document.getElementById('loader-timer');
+            const progressBar = document.getElementById('verification-progress');
+            const log = document.getElementById('verification-log');
+            
+            const logMessages = [
+                "Connecting to sponsor verification server...",
+                "Waiting for task completion signal...",
+                "Checking offer completion status...",
+                "Validating conversion pixel...",
+                "Confirming user action...",
+                "Decrypting code with completed verification key...",
+                "Almost there...",
+                "Finalizing..."
+            ];
+            
+            let messageIndex = 0;
+            
+            const interval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                const progress = ((totalTime - timeLeft) / totalTime) * 100;
+                progressBar.style.width = `${progress}%`;
+                
+                if (timeLeft % 15 === 0 && messageIndex < logMessages.length) {
+                    const p = document.createElement('p');
+                    p.textContent = `> ${logMessages[messageIndex]}`;
+                    p.className = 'text-blue-400';
+                    log.appendChild(p);
+                    log.scrollTop = log.scrollHeight;
+                    messageIndex++;
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    showRevealScreen();
+                }
+            }, 1000);
+        }
+
+        // --- Reveal Screen ---
+        function showRevealScreen() {
+            const loader = document.getElementById('verification-loader');
+            loader.style.opacity = '0';
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                
+                const reveal = document.getElementById('reveal-screen');
+                reveal.classList.remove('hidden');
+                reveal.classList.add('animate-fade-in');
+                
+                const container = document.getElementById('final-code-container');
+                const platform = state.selectedCard;
+                
+                if (['visa', 'mastercard', 'amex'].includes(platform)) {
+                    container.innerHTML = renderCreditCardRevealed(state.generatedCardData);
+                } else if (platform === 'aliexpress') {
+                    container.innerHTML = renderCouponRevealed(state.generatedCode);
+                } else {
+                    container.innerHTML = renderStandardRevealed(state.generatedCode);
+                }
+            }, 500);
+        }
+
+        function renderCreditCardRevealed(data) {
+            return `
+                <div class="credit-card ${data.type} p-6 flex flex-col justify-between mx-auto text-left" onclick="copyCardData(this)">
+                    <div class="flex justify-between items-start">
+                        <div class="card-chip"></div>
+                        <i class="fa-brands fa-cc-${data.type} text-4xl opacity-80"></i>
+                    </div>
+                    <div class="card-number text-white mt-4">${data.number}</div>
+                    <div class="flex justify-between items-end mt-4">
+                        <div>
+                            <div class="card-label text-white/70 mb-1">Card Holder</div>
+                            <div class="card-value text-white">${data.name}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="card-label text-white/70 mb-1">Expires</div>
+                            <div class="card-value text-white">${data.expiry}</div>
+                            <div class="card-label text-white/70 mt-2 mb-1">CVV</div>
+                            <div class="card-value text-white">${data.cvv}</div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4 text-xs text-white/50">Click to copy card details</div>
+                </div>
+            `;
+        }
+
+        function renderCouponRevealed(code) {
+            return `
+                <div class="coupon-card" onclick="copyToClipboard('${code}')">
+                    <div class="text-white/80 text-sm mb-2">AliExpress Coupon</div>
+                    <div class="coupon-code text-white">${code}</div>
+                    <div class="text-white/60 text-xs mt-2">Valid for 30 days • Click to copy</div>
+                </div>
+            `;
+        }
+
+        function renderStandardRevealed(code) {
+            return `
+                <div class="bg-black/50 rounded-2xl p-8 border border-white/10 relative overflow-hidden group cursor-pointer" onclick="copyToClipboard('${code}')">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="font-mono text-2xl md:text-3xl tracking-widest text-white mb-2">
+                        ${code}
+                    </div>
+                    <p class="text-xs text-gray-500">Click to copy</p>
+                </div>
+            `;
+        }
+
+        function copyCardData(element) {
+            const number = element.querySelector('.card-number').textContent;
+            const name = element.querySelectorAll('.card-value')[0].textContent;
+            const expiry = element.querySelectorAll('.card-value')[1].textContent;
+            const cvv = element.querySelectorAll('.card-value')[2].textContent;
+            
+            const text = `Card: ${number}\nName: ${name}\nExpiry: ${expiry}\nCVV: ${cvv}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const original = element.innerHTML;
+                element.innerHTML = '<div class="flex items-center justify-center h-full text-green-400 font-bold text-xl">COPIED!</div>';
+                setTimeout(() => {
+                    element.innerHTML = original;
+                }, 2000);
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const container = document.getElementById('final-code-container');
+                const original = container.innerHTML;
+                container.innerHTML = '<div class="text-green-400 font-bold text-xl py-8">COPIED!</div>';
+                setTimeout(() => {
+                    container.innerHTML = original;
+                }, 2000);
+            });
+        }
+
+        function copyCode() {
+            if (state.generatedCode) {
+                copyToClipboard(state.generatedCode);
+            }
+        }
+
+        // --- Reset ---
+        function resetApp() {
+            state = {
+                selectedCard: null,
+                selectedAmount: null,
+                generatedCode: null,
+                generatedCardData: null,
+                taskCompleted: false
+            };
+            
+            document.querySelectorAll('.gift-card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('lab-panel').classList.remove('open');
+            
+            const genBtn = document.getElementById('generate-btn');
+            genBtn.disabled = true;
+            genBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            genBtn.innerHTML = '<span>Initialize Generation</span><i class="fa-solid fa-arrow-right"></i>';
+            
+            document.getElementById('selected-platform').textContent = 'Waiting...';
+            
+            document.querySelectorAll('#generation-screen, #code-screen, #locker-screen, #verification-loader, #reveal-screen').forEach(el => {
+                el.classList.add('hidden');
+                el.style.opacity = '1';
+            });
+            
+            document.getElementById('hero-section').style.display = 'block';
+            document.getElementById('hero-section').style.opacity = '1';
+            document.getElementById('selection-container').style.display = 'block';
+            
+            document.getElementById('main-progress').style.width = '0%';
+            document.getElementById('terminal-output').innerHTML = '';
+            document.getElementById('connection-line').style.width = '0';
+            document.getElementById('button-progress').style.width = '0';
+            document.getElementById('verification-progress').style.width = '0';
+            document.getElementById('verification-log').innerHTML = '<p>Initializing verification sequence...</p>';
+            
+            document.getElementById('step-1-indicator').innerHTML = '1';
+            document.getElementById('step-1-indicator').className = 'w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/30';
+            document.getElementById('step-2-indicator').className = 'w-10 h-10 rounded-full bg-gray-800 border border-gray-700 text-gray-500 flex items-center justify-center font-bold text-sm transition-all duration-500';
+            document.getElementById('task-counter').textContent = '0/1';
+            document.getElementById('task-counter').classList.remove('text-green-400');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- Initialize ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            updateOnlineUsers();
+        });
+    </script>
+</body>
+</html>f
